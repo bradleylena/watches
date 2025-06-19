@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Your Cart</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Poppins", sans-serif;
+        background-color: #f2f3f5;
+        margin: 0;
+        padding: 0;
+      }
+
+      header {
+        background-color: #111;
+        color: #fff;
+        padding: 20px;
+        text-align: center;
+        position: relative;
+      }
+
+      header a {
+        color: #fff;
+        text-decoration: none;
+        position: absolute;
+        left: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-weight: 500;
+      }
+
+      main {
+        max-width: 1000px;
+        margin: 40px auto;
+        padding: 30px;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      }
+
+      h2 {
+        text-align: center;
+        font-size: 26px;
+        margin-bottom: 30px;
+        color: #222;
+      }
+
+      table.cart-table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .cart-table th,
+      .cart-table td {
+        padding: 16px;
+        text-align: center;
+        border-bottom: 1px solid #eee;
+        color: black;
+      }
+
+      .cart-table th {
+        background-color: #f5f5f5;
+        font-weight: 600;
+        color: #333;
+      }
+
+      .cart-table img {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        margin-bottom: 6px;
+      }
+
+      .cart-table p {
+        margin: 4px 0 0;
+        font-size: 14px;
+        color: #555;
+        color: black;
+      }
+
+      select {
+        padding: 6px 10px;
+        font-size: 14px;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        color: black;
+        background: #fff;
+        cursor: pointer;
+      }
+
+      button.remove-btn {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: #e74c3c;
+        transition: transform 0.2s;
+      }
+
+      button.remove-btn:hover {
+        transform: scale(1.2);
+      }
+
+      .cart-summary {
+        text-align: right;
+        font-size: 18px;
+        margin-top: 30px;
+        color: black;
+      }
+
+      .cart-summary p {
+        font-weight: 500;
+        color: #333;
+      }
+
+      .checkout-btn {
+        margin-top: 15px;
+        background-color: #111;
+        color: white;
+        border: none;
+        padding: 14px 26px;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.3s ease;
+      }
+
+      .checkout-btn:hover {
+        background-color: #333;
+      }
+
+      @media (max-width: 768px) {
+        main {
+          padding: 20px;
+        }
+
+        .cart-table th,
+        .cart-table td {
+          font-size: 14px;
+          padding: 10px;
+        }
+
+        .checkout-btn {
+          width: 100%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAVBAR -->
+    <div class="topbar">
+      <div class="navbar">
+        <div class="navlogo">
+          <h2>Timeless Kenya</h2>
+        </div>
+        <!-- logoimg -->
+        <div class="navlogoimg">
+          <img src="/assets/321.gif" alt="logo" width="120px" height="86px" />
+        </div>
+        <!-- links -->
+        <div class="navlinks">
+          <nav>
+            <ul>
+              <li><a href="/index.html">Home</a></li>
+              <li><a href="/html/store.html">Store</a></li>
+              <li><a href="/index.html#Testimonials">Testimonials</a></li>
+              <li><a href="/index.html#contact">Contact Us</a></li>
+              <li><a href="/html/cart.html">🛒 View Cart</a></li>
+            </ul>
+          </nav>
+        </div>
+      </div>
+    </div>
+
+    <main>
+      <h2>Shopping Cart</h2>
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Price</th>
+            <th>Quantity</th>
+            <th>Total</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody id="cartItems"></tbody>
+      </table>
+
+      <div class="cart-summary">
+        <p>Total: <span id="cartTotal">KES 0</span></p>
+        <button class="checkout-btn" onclick="goToCheckout()">Checkout</button>
+      </div>
+    </main>
+
+    <script>
+      function goToCheckout() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        if (cart.length === 0) {
+          alert("🛒 Your cart is empty!");
+        } else {
+          window.location.href = "checkout.html";
+        }
+      }
+
+      function renderCart() {
+        const cart = JSON.parse(localStorage.getItem("cart")) || [];
+        const cartTable = document.getElementById("cartItems");
+        const cartTotal = document.getElementById("cartTotal");
+
+        cartTable.innerHTML = "";
+        let total = 0;
+
+        cart.forEach((item, index) => {
+          const itemTotal = item.quantity * item.price;
+          total += itemTotal;
+
+          cartTable.innerHTML += `
+          <tr>
+            <td>
+              <img src="${item.images?.[0] || item.image}" />
+              <p>${item.name}</p>
+            </td>
+            <td>KES ${item.price}</td>
+            <td>
+              <select onchange="changeQuantity(${index}, this.value)">
+                ${[...Array(10)]
+                  .map(
+                    (_, i) =>
+                      `<option value="${i + 1}" ${
+                        item.quantity === i + 1 ? "selected" : ""
+                      }>${i + 1}</option>`
+                  )
+                  .join("")}
+              </select>
+            </td>
+            <td>KES ${itemTotal}</td>
+            <td>
+              <button class="remove-btn" onclick="removeItem(${index})">🗑️</button>
+            </td>
+          </tr>
+        `;
+        });
+
+        cartTotal.textContent = "KES " + total;
+      }
+
+      function changeQuantity(index, newQty) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart[index].quantity = parseInt(newQty);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+      }
+
+      function removeItem(index) {
+        let cart = JSON.parse(localStorage.getItem("cart")) || [];
+        cart.splice(index, 1);
+        localStorage.setItem("cart", JSON.stringify(cart));
+        renderCart();
+      }
+
+      document.addEventListener("DOMContentLoaded", renderCart);
+    </script>
+  </body>
+</html>
